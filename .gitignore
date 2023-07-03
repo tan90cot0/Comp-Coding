@@ -1,6 +1,16 @@
 # Prerequisites
 *.d
 
+#Test cases
+*.txt
+
+#Shell Scripts
+*.sh
+
+# Test Files
+cp.cpp
+cp.py
+
 # Compiled Object files
 *.slo
 *.lo
