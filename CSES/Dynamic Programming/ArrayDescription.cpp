@@ -10,11 +10,13 @@ using namespace std;
 #define fors(i, a, b, c) for(ll i = a; i < b; i += c)
 #define fora(x, v) for(auto x : v)
 #define vl vector<ll>
+#define vvl vector<vector<ll> >
 #define vs vector<string>
 #define vd vector<double>
 #define vb vector<bool>
 #define ml map<ll, ll>
 #define sl set<ll>
+#define pl pair<ll, ll>
 #define pub push_back
 #define pob pop_back
 #define yesno(x) cout << ((x) ? "YES\n" : "NO\n")
@@ -178,9 +180,10 @@ ll binaryToDecimal(string s){
 
 map<ll, ll> frequency(vl arr){
     map<ll, ll> d;
-    for0(i, arr.size())
+    ll n = arr.size();
+    for0(i, n)
         d[arr[i]] = 0;
-    for0(i, arr.size())
+    for0(i, n)
         d[arr[i]]+=1;
     return d;
 }
@@ -200,27 +203,42 @@ void printd(double n)
 }
 
 void printarr(vl arr){
-    for0(i, arr.size())
+    for0(i, (ll)arr.size())
         cout<<arr[i]<<" ";
     cout<<endl;
 }
 
 void printarr(vs arr){
-    for0(i, arr.size())
+    for0(i, (ll)arr.size())
         cout<<arr[i]<<" ";
     cout<<endl;
 }
 
 void printarr(vd arr){
-    for0(i, arr.size())
+    for0(i, (ll)arr.size())
         cout<<arr[i]<<" ";
     cout<<endl;
 }
 
+void printarr(vector<pair<ll, ll>> arr){
+    for0(i, (ll)arr.size())
+        cout<<arr[i].first<<" "<<arr[i].second<<endl;
+    cout<<endl;
+}
+
 void printmat(vector<vd > arr){
-    for0(i, arr.size())
+    for0(i, (ll)arr.size())
     {
-        for0(j, arr[0].size())
+        for0(j, (ll)arr[0].size())
+            cout<<arr[i][j]<<" ";
+        cout<<endl;
+    }
+}
+
+void printmat(vvl arr){
+    for0(i, (ll)arr.size())
+    {
+        for0(j, (ll)arr[0].size())
             cout<<arr[i][j]<<" ";
         cout<<endl;
     }
@@ -265,31 +283,40 @@ ll getIndex(vd v, double K)
     return ind;
 }
 
-ll custom_index(vl &pages, vd & pagebyprice, double elem){
-    ll ind;
-    ll val = -1;
-    for0(i, pagebyprice.size())
-        if(pagebyprice[i]==elem && pages[i]>val){
-            ind = i;
-            val = pages[i];
-        }
-    return ind;
+void update(vvl &dp, ll i, ll j){
+    ll a = dp[i-1][j-1];
+    ll b = dp[i-1][j];
+    ll c = dp[i-1][j+1];
+    dp[i][j] = (a+b+c)%mod;
 }
 
 void solve()
 {
     ll n = input_n();
-    ll x = input_n();
-    vl prices = input_arr(n);
-    vl pages = input_arr(n);
-    vl dp(x+1,0);
-    // The order of loops is very important, and the manner as well (forward/reverse), 
-    // first loop through all the entries, and then the prices
-    for0(i, n)
-        rofl(j, x+1)
-            if(j>=prices[i])
-                dp[j] = max(dp[j], dp[j-prices[i]] + pages[i]);
-    print(dp[x]);
+    ll m = input_n();
+    vl arr = input_arr(n);
+    vvl dp(n, vl (m+2, 0));
+    // If the first value is 0, then all the values can be obtained at index 0, else only the given value can
+    if(arr[0]==0)
+        for1(i, m)
+            dp[0][i]=1;
+    else
+        dp[0][arr[0]] = 1;
+    
+    // The entry whereever applicable, is just the sum of the 3 adjacent valued entries in the previous index
+    for1(i, n-1){
+        if(arr[i]==0)
+            for1(j, m)
+                update(dp, i, j);
+        else
+            update(dp, i, arr[i]);
+    }
+    ll ans = 0;
+    // Sum over all possible values the last index can take
+    for1(i, m)
+        ans = (ans+dp[n-1][i])%mod;
+    print(ans);
+
 }
 
 int main(int argc, char *argv[]) {
@@ -305,9 +332,3 @@ int main(int argc, char *argv[]) {
     else
         solve();
 }
-
-/*
-10 10
-1 2 10 6 5 1 7 4 10 4
-6 3 8 1 7 3 8 6 5 6
-*/
