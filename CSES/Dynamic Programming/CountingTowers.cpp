@@ -49,6 +49,14 @@ vl get_factorials(ll n){
     return factorials;
 }
 
+ll mul(ll a, ll b){
+    return (a*b)%mod;
+}
+
+ll add(ll a, ll b){
+    return (a+b)%mod;
+}
+
 ll binary_search(vd arr, ll low, ll high, ll x){
     ll mid = (high+low)/2;
     if(high>=low){
@@ -290,53 +298,59 @@ void update(vvl &dp, ll i, ll j){
     dp[i][j] = (a+b+c)%mod;
 }
 
-void solve()
+vl solver()
 {
-    ll n = input_n();
-    ll m = input_n();
-    vl arr = input_arr(n);
-    vvl dp(n, vl (m+2, 0));
-    // If the first value is 0, then all the values can be obtained at index 0, else only the given value can
-    if(arr[0]==0)
-        for1(i, m)
-            dp[0][i]=1;
-    else
-        dp[0][arr[0]] = 1;
-    
-    // The entry whereever applicable, is just the sum of the 3 adjacent valued entries in the previous index
-    for1(i, n-1){
-        if(arr[i]==0)
-            for1(j, m)
-                update(dp, i, j);
-        else
-            update(dp, i, arr[i]);
-    }
-    ll ans = 0;
-    // Sum over all possible values the last index can take
-    for1(i, m)
-        ans = (ans+dp[n-1][i])%mod;
-    print(ans);
+    ll n = 1e6;
+    // a array represents towers with 2 separate blocks on top
+    vl a(1, 1);
 
+    // b array represents towers with 1 joined block on top
+    vl b(1, 1);
+
+    // dp array represents the answer for each n
+    vl dp(1, 2);
+    
+    for0(i, n-1){
+        a.push_back(add(b[i], mul(4, a[i])));
+        b.push_back(add(a[i], mul(2, b[i])));
+        dp.push_back(add(a[i+1], b[i+1]));
+    }
+    return dp;
+}
+
+void solve(vl dp){
+    ll n = input_n();
+    print(dp[n-1]);
 }
 
 int main(int argc, char *argv[]) {
-	if(argc>1)
-        freopen("test_case.txt", "r", stdin);
-    bool t = false;
+    FILE* x;
+    bool open = false;
+	if(argc>1){
+        x = freopen("test_case.txt", "r", stdin);
+        open = true;
+    }
+        
+    // Store all the values up till 10^6 once. 
+    vl dp = solver();
+    bool t = true;
     if(t){
         int tc;
         cin>>tc;
         while(tc--)
-            solve();
+            solve(dp);
     }
     else
-        solve();
+        solve(dp);
+    if(open)
+        fclose(x);
 }
 
 /* Input
 
-5 3
-2 0 0 0 2
+3
+2
+6
+1337
 
 */
-

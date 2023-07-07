@@ -25,6 +25,14 @@ using namespace std;
 const ll N = 2e5 + 4;
 const ll mod = 1e9 + 7;
 
+ll mul(ll a, ll b){
+    return (a*b)%mod;
+}
+
+ll add(ll a, ll b){
+    return (a+b)%mod;
+}
+
 bool is_prime(ll n){
     for0(i, (int)(sqrt(n)-1))
         if(n%(i+2)==0)
@@ -293,36 +301,18 @@ void update(vvl &dp, ll i, ll j){
 void solve()
 {
     ll n = input_n();
-    ll m = input_n();
-    vl arr = input_arr(n);
-    vvl dp(n, vl (m+2, 0));
-    // If the first value is 0, then all the values can be obtained at index 0, else only the given value can
-    if(arr[0]==0)
-        for1(i, m)
-            dp[0][i]=1;
-    else
-        dp[0][arr[0]] = 1;
     
-    // The entry whereever applicable, is just the sum of the 3 adjacent valued entries in the previous index
-    for1(i, n-1){
-        if(arr[i]==0)
-            for1(j, m)
-                update(dp, i, j);
-        else
-            update(dp, i, arr[i]);
-    }
-    ll ans = 0;
-    // Sum over all possible values the last index can take
-    for1(i, m)
-        ans = (ans+dp[n-1][i])%mod;
-    print(ans);
 
 }
 
 int main(int argc, char *argv[]) {
-	if(argc>1)
-        freopen("test_case.txt", "r", stdin);
-    bool t = false;
+	FILE* x;
+    bool open = false;
+	if(argc>1){
+        x = freopen("test_case.txt", "r", stdin);
+        open = true;
+    }
+    bool t = true;
     if(t){
         int tc;
         cin>>tc;
@@ -331,12 +321,6 @@ int main(int argc, char *argv[]) {
     }
     else
         solve();
+    if(open)
+        fclose(x);
 }
-
-/* Input
-
-5 3
-2 0 0 0 2
-
-*/
-
