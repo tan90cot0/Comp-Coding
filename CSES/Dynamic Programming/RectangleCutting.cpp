@@ -300,9 +300,27 @@ void update(vvl &dp, ll i, ll j){
 
 void solve()
 {
-    ll n = input_n();
-    
-
+    ll a = input_n();
+    ll b = input_n();
+    ll m = max(a,b);
+    vvl grid (m, vl (m, 501));
+    for0(i, m){
+        for0(j, m){
+            if(i==j)
+                // On a diagonal, it already is a square
+                grid[i][j] = 0;
+            else{
+                // Break it down first row-wise, into 2 rectangles, then columnwise, then take their min
+                for0(k, (i+1)/2)
+                    grid[i][j] = min(grid[i][j], 1 + grid[k][j] + grid[i-1-k][j]);
+                for0(k, (j+1)/2)
+                    grid[i][j] = min(grid[i][j], 1 + grid[i][k] + grid[i][j-1-k]);
+                grid[j][i] = grid[i][j];
+                // the matrix will be symmetric
+            }
+        }
+    }
+    print(grid[a-1][b-1]);
 }
 
 int main(int argc, char *argv[]) {
@@ -324,3 +342,8 @@ int main(int argc, char *argv[]) {
     if(open)
         fclose(x);
 }
+
+/*
+Input:
+159 399
+*/
