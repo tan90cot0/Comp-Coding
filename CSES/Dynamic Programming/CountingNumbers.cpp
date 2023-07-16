@@ -24,7 +24,6 @@ using namespace std;
  
 const ll N = 2e5 + 4;
 const ll mod = 1e9 + 7;
-vs grid;
 
 ll mul(ll a, ll b){
     return (a*b)%mod;
@@ -292,29 +291,50 @@ ll getIndex(vd v, double K)
     return ind;
 }
 
-bool findInSet(sl s, ll x){
-    if(s.find(x)!=s.end())
-        return true;
-    else
-        return false;
-}
-
-void neighbours(ll i, ll j, ll m, ll n){
-    grid[i][j] = '#';
-    if(i+1<m && grid[i+1][j]=='.')
-        neighbours(i+1, j, m, n);
-    if(i-1>=0 && grid[i-1][j]=='.')
-        neighbours(i-1, j, m, n);
-    if(j+1<n && grid[i][j+1]=='.')
-        neighbours(i, j+1, m, n);
-    if(j-1>=0 && grid[i][j-1]=='.')
-        neighbours(i, j-1, m, n);  
+ll calc(ll n){
+    vl arr;
+    vl digits;
+    ll n_copy = n;
+    if(n==-1 or n==0)
+        return n+1;
+    for(; n; n/=10)
+        digits.push_back( n%10 );
+    ll num_digits = digits.size();
+    if(num_digits==1)
+        return n_copy+1;
+    ll num = 1;
+    for0(i, num_digits){
+        arr.push_back(num);
+        num*=9;
+    }
+    vl digit_less_than;
+    digit_less_than.push_back(0);
+    rofl(i, num_digits-2){
+        if(digits[i]>=digits[i+1])
+            digit_less_than.push_back(1);
+        else
+            digit_less_than.push_back(0);
+    }
+    ll s = 0;
+    rofl(i, num_digits-1){
+        ll val = (digits[i]-digit_less_than[num_digits-1-i]);
+        ll power = arr[i];
+        ll x;
+        if(i==num_digits-1)
+            x = (val-1)*power + (power*10)/9;
+        else
+            x = val*power;
+        s+=x;
+    }
+    return s+2;
+        
 }
 
 void solve()
 {
-    ll m = input_n();
-    ll n = input_n();
+    ll a = input_n();
+    ll b = input_n();
+    print(calc(b) - calc(a-1));
 }
 
 int main(int argc, char *argv[]) {
@@ -336,3 +356,8 @@ int main(int argc, char *argv[]) {
     if(open)
         fclose(x);
 }
+
+/*
+Input:
+5 5
+*/

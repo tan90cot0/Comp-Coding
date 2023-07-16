@@ -24,7 +24,7 @@ using namespace std;
  
 const ll N = 2e5 + 4;
 const ll mod = 1e9 + 7;
-vs grid;
+vs arr;
 
 ll mul(ll a, ll b){
     return (a*b)%mod;
@@ -300,14 +300,14 @@ bool findInSet(sl s, ll x){
 }
 
 void neighbours(ll i, ll j, ll m, ll n){
-    grid[i][j] = '#';
-    if(i+1<m && grid[i+1][j]=='.')
+    arr[i][j] = '#';
+    if(i+1<m && arr[i+1][j]=='.')
         neighbours(i+1, j, m, n);
-    if(i-1>=0 && grid[i-1][j]=='.')
+    if(i-1>=0 && arr[i-1][j]=='.')
         neighbours(i-1, j, m, n);
-    if(j+1<n && grid[i][j+1]=='.')
+    if(j+1<n && arr[i][j+1]=='.')
         neighbours(i, j+1, m, n);
-    if(j-1>=0 && grid[i][j-1]=='.')
+    if(j-1>=0 && arr[i][j-1]=='.')
         neighbours(i, j-1, m, n);  
 }
 
@@ -315,6 +315,16 @@ void solve()
 {
     ll m = input_n();
     ll n = input_n();
+    for0(i, m)
+        arr.push_back(input_string());
+    ll ans = 0;
+    for0(i, m)
+        for0(j, n)
+            if(arr[i][j]=='.'){
+                ans+=1;
+                neighbours(i, j, m, n);
+            }      
+    print(ans);
 }
 
 int main(int argc, char *argv[]) {
@@ -336,3 +346,18 @@ int main(int argc, char *argv[]) {
     if(open)
         fclose(x);
 }
+
+/*
+Input:
+10 10
+####.###..
+#.######.#
+##.######.
+###.###..#
+##.####..#
+#####..###
+#.########
+#.####.#.#
+#####..##.
+######.###
+*/
