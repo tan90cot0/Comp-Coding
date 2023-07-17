@@ -383,6 +383,34 @@ void Graph::bfs(int v) {
 void solve() {
 
     ll n = input_n();  
+    ll m = input_n();
+
+    //Make a graph
+    Graph g(n);   
+    for0(i, m){
+        ll u = input_n();  
+        ll v = input_n();
+        g.addEdge(u-1, v-1);
+    }
+    // do a bfs traversal to find the shortest path
+    g.bfs(0);
+
+    // maintain a prev vector to trace back the correct path
+    mi prev = g.prevVertex;
+    vi ans;
+    if(prev.find(n-1)!=prev.end()){
+        int curr = n-1;
+        while(curr!=0){
+            ans.push_back(curr+1);
+            curr = prev[curr];
+        }
+        ans.push_back(1);
+        reverse(ans);
+        print(ans.size());
+        printarr(ans);
+    }
+    else
+        print("IMPOSSIBLE");
     
 }
 
