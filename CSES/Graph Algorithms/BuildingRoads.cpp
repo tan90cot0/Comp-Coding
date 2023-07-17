@@ -358,9 +358,28 @@ void Graph::dfs(int v, bool visited[]) {
 // Write code here
 
 void solve() {
-    
     ll n = input_n();  
-    
+    ll m = input_n();
+
+    //Make a graph
+    Graph g(n);   
+    for0(i, m){
+        ll u = input_n();  
+        ll v = input_n();
+        g.addEdge(u-1, v-1);
+    }
+
+    // Find the connected components
+    g.connectedComponents();
+
+    // Get a representative node for each connected component
+    vi keys = getKeys(g.components);
+
+    // Now make a Minimum Spanning Tree for these nodes
+    print(keys.size()-1);
+    for1int(i, (int)keys.size()-1)
+        cout<<keys[i-1]+1<<" "<<keys[i]+1<<endl;
+
 }
 
 
