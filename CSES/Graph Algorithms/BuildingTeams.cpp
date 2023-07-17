@@ -390,6 +390,58 @@ void Graph::bfs(int v) {
 void solve() {
 
     ll n = input_n();  
+    ll m = input_n();
+
+    // Make a graph
+    Graph g(n); 
+    queue<ll > q;
+    vector<bool> visited (n, false);
+    vl ans (n, 0);
+    bool res = true;
+
+    for0(i, m){
+        ll u = input_n();  
+        ll v = input_n();
+        g.addEdge(u-1, v-1);
+    }
+    
+    for0int(i, n){
+        // Checking for new connected components
+        if(!visited[i]){
+            q.push(i);
+            visited[i] = true;
+            ans[i] = 1;
+            while(!q.empty()){
+                ll elem = q.front();
+                q.pop();
+                for(auto v : g.adj[elem]){
+                    if(!visited[v]){
+                        q.push(v);
+                        visited[v] = true;
+                        ans[v] = 3-ans[elem];
+                    }
+                    // Check for an odd length cycle
+                    else if(ans[v]!=3-ans[elem]){
+                        res = false;
+                        break;
+                    }
+                }
+            }
+        }
+    }
+    // The map will store keys in a sorted order, just print out the colors assigned
+    if(res){
+        for(auto elem: ans)
+            cout<<elem<<" ";
+        cout<<endl;
+    }
+    else{
+        print("IMPOSSIBLE");
+    }
+    
+
+
+
     
 }
 
