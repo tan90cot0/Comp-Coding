@@ -42,6 +42,7 @@ using namespace std;
  
 const ll N = 2e5 + 4;
 const ll mod = 1e9 + 7;
+int cycle_node;
 
 // -----X-----X-----X-----X-----X-----X-----X-----X-----X-----X-----X-----X-----X-----X-----X----
 
@@ -411,6 +412,7 @@ bool Graph::isCyclicUtil(int v, bool visited[], int parent, int length)
     // if the neighbour is visited and not a parent, its a cycle
         else if (*i != parent && length>=2){
             prevVertex[*i] = v+1;
+            cycle_node = *i+1;
             return true;
         }
     }     
@@ -441,7 +443,33 @@ bool Graph::isCyclic()
 void solve() {
 
     ll n = input_n();  
-    
+    ll m = input_n();
+
+    // Make a graph
+    Graph g(n); 
+
+    for0(i, m){
+        ll u = input_n();  
+        ll v = input_n();
+        g.addEdge(u-1, v-1);
+    }
+
+    if(g.isCyclic()){
+        vi path;
+        path.push_back(cycle_node);
+
+        // prevertex contains the parent pointer of every node in the cycle
+        int curr = g.prevVertex[cycle_node-1];
+        while(curr!=cycle_node){
+            path.push_back(curr);
+            curr = g.prevVertex[curr-1];
+        }
+        path.push_back(curr);       
+        print(path.size());
+        printarr(path);
+    }
+    else
+        print("IMPOSSIBLE");
 }
 
 
@@ -471,4 +499,26 @@ int main(int argc, char *argv[]) {
 // -----X-----X-----X-----X-----X-----X-----X-----X-----X-----X-----X-----X-----X-----X-----X----
 /*
 Input:
+10 20
+8 5
+6 10
+3 6
+3 1
+8 6
+9 10
+2 1
+6 7
+4 3
+1 9
+3 7
+2 6
+4 1
+2 5
+8 4
+1 8
+10 8
+5 4
+7 1
+7 9
+
 */
