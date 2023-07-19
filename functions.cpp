@@ -52,8 +52,7 @@ vl input_arr(ll n){
     vl arr(n,0);
     for0(i, n)
         cin>>arr[i];
-    return arr;
-        
+    return arr;      
 }
 
 // Helper Functions

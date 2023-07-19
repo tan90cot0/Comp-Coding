@@ -1,7 +1,7 @@
 /*
-Problem: 
-Link - 
-Author -
+Problem: 1674 - Subordinates
+Link - https://cses.fi/problemset/task/1674
+Author - Aryan Dua
 */
 
 #include<iostream> 
@@ -78,11 +78,42 @@ vl input_arr(ll n){
     return arr;      
 }
 
+class Node {
+    public:
+        Node(int val); 
+        int val;
+        vector<Node*> children;
+        int subordinates;
+};
+
+Node::Node(int val) {
+    this->val = val;
+    this->subordinates = 0;
+}
+
 // -----X-----X-----X-----X-----X-----X-----X-----X-----X-----X-----X-----X-----X-----X-----X----
 // Write code here
 
+int calc_subordinates(Node &node){
+    node.subordinates = 0;
+    // It's the sum of the subordinates of the children + the child himself
+    for(auto child: node.children)
+        node.subordinates+=calc_subordinates(*child)+1;
+    return node.subordinates;
+}
+
 void solve() {
     int n; input(n);
+    vector<Node> nodes;
+    for0(i, n)
+        nodes.push_back(Node(i));
+    for1(i, n-1){
+        int boss; input(boss);
+        nodes[boss-1].children.push_back(&nodes[i]);
+    }
+    calc_subordinates(nodes[0]);
+    for0(i, n)
+        cout<<nodes[i].subordinates<<" ";
 }
 
 // -----X-----X-----X-----X-----X-----X-----X-----X-----X-----X-----X-----X-----X-----X-----X----
@@ -111,8 +142,11 @@ int main(int argc, char *argv[]) {
 // -----X-----X-----X-----X-----X-----X-----X-----X-----X-----X-----X-----X-----X-----X-----X----
 /*
 Input:
+5
+1 1 2 3
 */
 
 /*
 Output:
+4 1 1 0 0
 */
