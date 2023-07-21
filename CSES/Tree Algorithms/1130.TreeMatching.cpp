@@ -1,6 +1,6 @@
 /*
-Problem: 
-Link - 
+Problem: 1130. Tree Matching
+Link - https://cses.fi/problemset/task/1130/
 Author - Aryan Dua
 */
 
@@ -21,6 +21,7 @@ using namespace std;
 #define vl vector<ll>
 #define vi vector<int>
 #define vvl vector<vl>
+#define vvi vector<vi>
 #define vs vector<string>
 #define vd vector<double>
 #define vb vector<bool>
@@ -78,11 +79,44 @@ vl input_arr(ll n){
     return arr;      
 }
 
+
 // -----X-----X-----X-----X-----X-----X-----X-----X-----X-----X-----X-----X-----X-----X-----X----
 // Write code here
 
+int ans = 0;
+vvi adj;
+vb vis;
+
+void dfs(int src, int par){
+    for(auto nbr: adj[src]){
+        if(nbr!=par){
+            // Go max possible ahead and reach the leaf node
+            dfs(nbr, src);
+            // Then backtrack at every alternate pair
+            if(vis[src]==0 && vis[nbr]==0){
+                vis[src] = 1;
+                vis[nbr] = 1;
+                ans++;
+            }
+        }
+    }
+}
+
 void solve() {
     int n; input(n);
+    vi temp;
+    adj.resize(n, temp);
+    vis.resize(n, false);
+    for0(i, n-1){
+        int u, v; input(u, v);
+        adj[u-1].push_back(v-1);
+        adj[v-1].push_back(u-1);
+    }
+
+    dfs(0, 0);
+    print(ans);
+    
+
 }
 
 // -----X-----X-----X-----X-----X-----X-----X-----X-----X-----X-----X-----X-----X-----X-----X----
@@ -111,8 +145,14 @@ int main(int argc, char *argv[]) {
 // -----X-----X-----X-----X-----X-----X-----X-----X-----X-----X-----X-----X-----X-----X-----X----
 /*
 Input:
+5
+1 2
+1 3
+3 4
+3 5
 */
 
 /*
 Output:
+2
 */
