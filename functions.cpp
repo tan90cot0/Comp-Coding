@@ -95,9 +95,8 @@ vl get_factorials(ll n){
 
 template <class T>
     ll binary_search(vector<T> arr, ll low, ll high, T x){
-        ll mid = (high+low)/2;
         if(high>=low){
-            mid = (high+low)/2;
+            ll mid = (high+low)/2;
             if(arr[mid]==x)
                 return mid;
             else if(arr[mid]>=x)
@@ -205,6 +204,12 @@ template <class T>
 //     void print(T a){
 //         cout<<a<<endl;
 //     }
+
+template<typename T>
+inline void remove(vector<T> & v, const T & item)
+{
+    v.erase(std::remove(v.begin(), v.end(), item), v.end());
+}
 
 template<typename... T>
     void print(T&&... args) { 

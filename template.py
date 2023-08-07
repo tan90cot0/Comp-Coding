@@ -76,7 +76,7 @@ def input_string():
     if mode==0:
         return input()
     else:
-        with open('/Users/aryan/Desktop/cp/test_case.txt') as f:
+        with open('/Users/aryan/Desktop/Comp-Coding/test_case.txt') as f:
             lines = f.readlines()
         global line 
         st = lines[line][:-1]
@@ -161,14 +161,37 @@ def frequency(arr):
 
 def solve():
     n = input_n()
+    
+
+def valid(p1, p2):
+    if p1[0]==p2[0]:
+        return True
+    if p1[1]==p2[1]:
+        return True
+    if abs(p1[0]-p2[0])==abs(p1[1]-p2[1]):
+        return True
+    else:
+        return False
 
 def solve_t():
     t = input_n()
     for l in range(t):
         n = input_n()
+        arr = []
+        ans = 0
+        for i in range(n):
+            new_point = input_arr()
+            for j in range(len(arr)):
+                if valid(arr[j], new_point):
+                    ans+=2
+            arr.append(new_point)
+        print(ans)
+
+
         
         
 mode = 0
+line = 0
 if len(sys.argv)>1 and sys.argv[1]=='file':
     mode = 1
-solve()
+solve_t()
