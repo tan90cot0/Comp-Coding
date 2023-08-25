@@ -1,3 +1,9 @@
+/*
+Problem: 1668 - Building Teams                                                                                                                                        
+Link - https://cses.fi/problemset/task/1668
+Author - Aryan Dua
+*/
+
 #include<iostream> 
 #include <bits/stdc++.h>
 using namespace std;
@@ -42,7 +48,6 @@ using namespace std;
  
 const ll N = 2e5 + 4;
 const ll mod = 1e9 + 7;
-int cycle_node;
 
 // -----X-----X-----X-----X-----X-----X-----X-----X-----X-----X-----X-----X-----X-----X-----X----
 
@@ -312,7 +317,6 @@ template <class T1, class T2>
 class Graph {
     int V; // No. of vertices
     int curr;
-    bool isCyclicUtil(int v, bool visited[], int parent, int length);
  
 public:
     Graph(int V); // Constructor
@@ -323,8 +327,7 @@ public:
     void connectedComponents();
     map<int, int > prevVertex;
     void dfs(int v, bool visited[]);
-    bool isCyclic();
-    int bfs();
+    void bfs(int v);
 };
 
 Graph::Graph(int V) {
@@ -367,74 +370,24 @@ void Graph::dfs(int v, bool visited[]) {
             dfs(*i, visited);
 }
 
-int Graph::bfs() {
-    queue<ll > q;
-    vector<bool> visited (V, false);
- 
-    for0int(i, V){
-        // Checking for new connected components
-        if(!visited[i]){
-            q.push(i);
-            visited[i] = true;
-            ll len = 0;
-            while(!q.empty()){
-                ll elem = q.front();
-                q.pop();
-                for(auto v : adj[elem]){
-                    if(!visited[v]){
-                        q.push(v);
-                        visited[v] = true;
-                        prevVertex[v] = elem;
-                    }
-                    // Check for a cycle
-                    else if(len>2){
-                        prevVertex[v] = elem;
-                        return v;
-                    }
-                }
-                len+=1;
-            }
-        }
-    } 
-    return -1;
-}
-
-bool Graph::isCyclicUtil(int v, bool visited[], int parent, int length)
-{
+void Graph::bfs(int v) {
+    vector<bool> visited;
+    visited.resize(V, false);
+    list<int> queue;
     visited[v] = true;
-    prevVertex[v] = parent+1;
-    list<int>::iterator i;
-    for (i = adj[v].begin(); i != adj[v].end(); ++i) {
-        if (!visited[*i]){
-            if (isCyclicUtil(*i, visited, v, length+1))
-                return true; 
-        }
-    // if the neighbour is visited and not a parent, its a cycle
-        else if (*i != parent && length>=2){
-            prevVertex[*i] = v+1;
-            cycle_node = *i+1;
-            return true;
-        }
-    }     
-    return false;
-}
+    queue.push_back(v);
  
-// Returns true if the graph contains
-// a cycle, else false.
-bool Graph::isCyclic()
-{
-    bool* visited = new bool[V];
-    for (int i = 0; i < V; i++)
-        visited[i] = false;
-
-    for (int u = 0; u < V; u++) {
-        if (!visited[u]){
-            prevVertex.clear();
-            if (isCyclicUtil(u, visited, -1, 0))
-                return true;
-        }
+    while (!queue.empty()) {
+        v = queue.front();
+        // cout << v << " ";
+        queue.pop_front();
+        for (auto adjacent : adj[v]) 
+            if (!visited[adjacent]) {
+                visited[adjacent] = true;
+                prevVertex[adjacent] = v;
+                queue.push_back(adjacent);
+            }
     }
-    return false;
 }
 
 // -----X-----X-----X-----X-----X-----X-----X-----X-----X-----X-----X-----X-----X-----X-----X----
@@ -447,29 +400,55 @@ void solve() {
 
     // Make a graph
     Graph g(n); 
+    queue<ll > q;
+    vector<bool> visited (n, false);
+    vl ans (n, 0);
+    bool res = true;
 
     for0(i, m){
         ll u = input_n();  
         ll v = input_n();
         g.addEdge(u-1, v-1);
     }
-
-    if(g.isCyclic()){
-        vi path;
-        path.push_back(cycle_node);
-
-        // prevertex contains the parent pointer of every node in the cycle
-        int curr = g.prevVertex[cycle_node-1];
-        while(curr!=cycle_node){
-            path.push_back(curr);
-            curr = g.prevVertex[curr-1];
+    
+    for0int(i, n){
+        // Checking for new connected components
+        if(!visited[i]){
+            q.push(i);
+            visited[i] = true;
+            ans[i] = 1;
+            while(!q.empty()){
+                ll elem = q.front();
+                q.pop();
+                for(auto v : g.adj[elem]){
+                    if(!visited[v]){
+                        q.push(v);
+                        visited[v] = true;
+                        ans[v] = 3-ans[elem];
+                    }
+                    // Check for an odd length cycle
+                    else if(ans[v]!=3-ans[elem]){
+                        res = false;
+                        break;
+                    }
+                }
+            }
         }
-        path.push_back(curr);       
-        print(path.size());
-        printarr(path);
     }
-    else
+    // The map will store keys in a sorted order, just print out the colors assigned
+    if(res){
+        for(auto elem: ans)
+            cout<<elem<<" ";
+        cout<<endl;
+    }
+    else{
         print("IMPOSSIBLE");
+    }
+    
+
+
+
+    
 }
 
 
@@ -495,30 +474,3 @@ int main(int argc, char *argv[]) {
     if(open)
         fclose(x);
 }
-
-// -----X-----X-----X-----X-----X-----X-----X-----X-----X-----X-----X-----X-----X-----X-----X----
-/*
-Input:
-10 20
-8 5
-6 10
-3 6
-3 1
-8 6
-9 10
-2 1
-6 7
-4 3
-1 9
-3 7
-2 6
-4 1
-2 5
-8 4
-1 8
-10 8
-5 4
-7 1
-7 9
-
-*/

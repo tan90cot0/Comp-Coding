@@ -92,7 +92,7 @@ void solve()
     string path;
     pl end;
     pl start;
-    // make pair a standard function to make a pair of the given types
+    // make pair is a standard function to make a pair of the given types
     for0(i, m)
         for0(j, n)
         {

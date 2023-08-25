@@ -1,3 +1,9 @@
+/*
+Problem: 1669 - Round Trip                                                                                                                         
+Link - https://cses.fi/problemset/task/1669
+Author - Aryan Dua
+*/
+
 #include<iostream> 
 #include <bits/stdc++.h>
 using namespace std;
@@ -37,11 +43,12 @@ using namespace std;
 #define s second
 
 #define sort(v) sort(v.begin(), v.end())
-#define rev(v) reverse(v.begin(), v.end())
+#define reverse(v) reverse(v.begin(), v.end())
 #define mp make_pair
  
 const ll N = 2e5 + 4;
 const ll mod = 1e9 + 7;
+int cycle_node;
 
 // -----X-----X-----X-----X-----X-----X-----X-----X-----X-----X-----X-----X-----X-----X-----X----
 
@@ -411,6 +418,7 @@ bool Graph::isCyclicUtil(int v, bool visited[], int parent, int length)
     // if the neighbour is visited and not a parent, its a cycle
         else if (*i != parent && length>=2){
             prevVertex[*i] = v+1;
+            cycle_node = *i+1;
             return true;
         }
     }     
@@ -435,97 +443,39 @@ bool Graph::isCyclic()
     return false;
 }
 
-vs grid;
-vvl visitable;
-vvl prevCoord (1000, vl (1000, -1));
-
-void bfs(pl coord, ll m, ll n, bool mons, queue<pair<pl, ll> > q2){
-    vvl vis (1000, vl (1000, 0));
-    vl di = {1, -1, 0, 0};
-    vl dj = {0, 0, 1, -1};
-    queue<pair<pl, ll> > q;
-    if(mons)
-        q = q2;
-    else
-        q.push(make_pair(coord, 0));
-    while (!q.empty()){
-        pl p = q.front().first;
-        ll length = q.front().second;
-        if(mons)
-            if(visitable[p.f][p.s]>=length)
-                visitable[p.f][p.s] = -1;
-        if(!mons)
-            if(p.f==m-1 || p.f==0 || p.s==n-1 || p.s==0)
-                visitable[q.front().f.f][q.front().f.s] = q.front().s;
-        q.pop(); 
-        for0(k, 4){
-            ll row = p.f+di[k];
-            ll col = p.s+dj[k];
-            bool cond1 = (row<m) && (col<n) && (row>=0) && (col>=0);
-            bool cond2 = grid[row][col]=='.';
-            if(cond1 && cond2 && !vis[row][col]){
-                q.push(make_pair(make_pair(row, col), length+1));
-                if(!mons)
-                    prevCoord[row][col] = k;
-                vis[row][col] = 1;
-            }
-        }   
-    }
-    return;
-}
-
-string trace_path(pl start, pl end){
-    string path;
-    string dirs = "DURL";
-    vi first = {-1, 1, 0, 0};
-    vl second = {0, 0, -1, 1};
-    while(end!=start){
-        ll dir = prevCoord[end.first][end.second];
-        end.first = end.first+first[dir];
-        end.second = end.second+second[dir];
-        path+=dirs[dir];
-    }
-    rev(path);
-    return path;
-}
-
 // -----X-----X-----X-----X-----X-----X-----X-----X-----X-----X-----X-----X-----X-----X-----X----
 // Write code here
 
 void solve() {
 
+    ll n = input_n();  
     ll m = input_n();
-    ll n = input_n();
-    for0(i, m)
-        grid.push_back(input_string());
-    visitable.resize(m, vl (n, -1));
-    pl end;
-    pl start;
-    queue<pair<pl, ll> > q;
 
-    for0(i, m)
-        for0(j, n)
-        {
-            if(grid[i][j]=='A')
-                start = make_pair(i, j);
-            if(grid[i][j]=='M')
-                q.push(make_pair(make_pair(i, j), 0));
+    // Make a graph
+    Graph g(n); 
+
+    for0(i, m){
+        ll u = input_n();  
+        ll v = input_n();
+        g.addEdge(u-1, v-1);
+    }
+
+    if(g.isCyclic()){
+        vi path;
+        path.push_back(cycle_node);
+
+        // prevertex contains the parent pointer of every node in the cycle
+        int curr = g.prevVertex[cycle_node-1];
+        while(curr!=cycle_node){
+            path.push_back(curr);
+            curr = g.prevVertex[curr-1];
         }
-    // Do a bfs traversal over A and find out which boundary block can be covered, and at what distance
-    bfs(start, m, n, false, q);    
-    bfs(start, m, n, true, q);
-    // Now wherever any monster can reach before A, remove it from the data structure
-    for0(i, m)
-        for0(j, n)
-            // If it is still visitable, it means that we can reach before the monster
-            if(visitable[i][j]>=0){
-                string path = trace_path(start, make_pair(i, j));
-                print("YES");
-                print(path.size());
-                print(path);  
-                return;
-            }
-    print("NO"); 
+        path.push_back(curr);       
+        print(path.size());
+        printarr(path);
+    }
+    else
+        print("IMPOSSIBLE");
 }
 
 
@@ -555,21 +505,26 @@ int main(int argc, char *argv[]) {
 // -----X-----X-----X-----X-----X-----X-----X-----X-----X-----X-----X-----X-----X-----X-----X----
 /*
 Input:
-15 15
-###############
-#M#...#...#...#
-#A#.#.#.#.#.#.#
-#.#.#.#.#.#.#.#
-#.#.#.#.#.#.#.#
-#.#.#.#.#.#.#.#
-#.#.#.#.#.#.#.#
-#.#.#.#.#.#.#.#
-#.#.#.#.#.#.#.#
-#.#.#.#.#.#.#.#
-#.#.#.#.#.#.#.#
-#.#.#.#.#.#.#.#
-#.#.#.#.#.#.#.#
-#...#...#...#.#
-#############.#
+10 20
+8 5
+6 10
+3 6
+3 1
+8 6
+9 10
+2 1
+6 7
+4 3
+1 9
+3 7
+2 6
+4 1
+2 5
+8 4
+1 8
+10 8
+5 4
+7 1
+7 9
 
 */

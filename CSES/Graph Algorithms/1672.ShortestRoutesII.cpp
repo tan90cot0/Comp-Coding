@@ -1,3 +1,9 @@
+/*
+Problem: 1672 - Shortest Routes I  I                                                                                                                      
+Link - https://cses.fi/problemset/task/1672
+Author - Aryan Dua
+*/
+
 #include<iostream> 
 #include <bits/stdc++.h>
 using namespace std;
@@ -33,10 +39,6 @@ using namespace std;
 #define vii vector<pi>
 #define vll vector<pl>
 
-#define vvii vector<vii>
-#define vvll vector<vll>
-
-
 #define yesno(x) cout << ((x) ? "YES\n" : "NO\n")
 #define f first
 #define s second
@@ -69,56 +71,43 @@ template<typename... T>
         cout<<'\n';
     }
 
-void bellmanFord(ll V, vvll adj){
-    vl dist (V, 1e13);
-    dist[0] = 0;
-    
-    // Bellman ford runs n-1 times
-    for0(i, V-1)
-        for0(u, V) 
-            for(auto [v, wt]: adj[u])
-                if(dist[u] != 1e13 && dist[u] + wt < dist[v])
-                    dist[v] = dist[u] + wt;
-    queue<ll> changed;
-    // Check which vertices change in the nth iteration, they are a part of a negative cycle
-    for0(u, V) 
-        for(auto [v, wt]: adj[u])
-            if(dist[u] != 1e13 && dist[u] + wt < dist[v])
-                changed.push(v);
-            
-    // Check if the negative cycle vertices affect the nth node
-    vector<bool> visited (V, false);
-    while(!changed.empty()){
-        ll elem = changed.front();
-        changed.pop();
-        if(elem==V-1){
-            print(-1);
-            return;
-        }
-        for(auto [v, wt] : adj[elem]){
-            if(!visited[v]){
-                changed.push(v);
-                visited[v] = true;
-            }
+template <class T>
+    void printmat(T arr){
+        for0(i, (ll)arr.size())
+        {
+            for0(j, (ll)arr[0].size())
+                cout<<arr[i][j]<<" ";
+            cout<<endl;
         }
     }
-
-    print(-dist[V-1]);
-}
 
 // -----X-----X-----X-----X-----X-----X-----X-----X-----X-----X-----X-----X-----X-----X-----X----
 // Write code here
 
 void solve() {
-    ll n, m; input(n, m);
-    vll temp;
-    vvll adj (n, temp);
-
+    ll n, m, q; input(n, m, q);
+    // this initial value needs to be more than n*weight of edge
+    vvl dist (n, vl (n, 1000*mod));
     for0(i, m){
         ll u, v, wt; input(u, v, wt);
-        adj[u-1].push_back({v-1, -wt});
+        dist[u-1][v-1] = min(wt, dist[u-1][v-1]);
+        dist[v-1][u-1] = min(wt, dist[v-1][u-1]);
     }
-    bellmanFord(n, adj);
+    // Floyd Warshall Algo
+    for0(i, n)  dist[i][i] = 0;
+    for0(k, n)
+        for0(i, n)
+            for0(j, n)
+                dist[i][j] = min(dist[i][j], dist[i][k] + dist[k][j]);
+    for0(i, q){
+        ll u, v; input(u, v);
+        ll temp = dist[u-1][v-1];
+        if(temp==1000*mod)
+            printl(-1);
+        else
+            printl(temp);
+    }
+
 }
 
 // -----X-----X-----X-----X-----X-----X-----X-----X-----X-----X-----X-----X-----X-----X-----X----
@@ -147,4 +136,36 @@ int main(int argc, char *argv[]) {
 // -----X-----X-----X-----X-----X-----X-----X-----X-----X-----X-----X-----X-----X-----X-----X----
 /*
 Input:
+10 20 10
+2 4 5
+2 7 8
+1 2 3
+9 10 6
+8 9 6
+8 10 9
+1 6 6
+2 5 7
+6 9 7
+3 4 9
+4 8 2
+5 6 2
+7 8 5
+5 9 8
+7 9 7
+4 6 8
+2 3 6
+6 7 10
+4 9 3
+4 5 4
+3 2
+9 8
+10 4
+5 9
+6 10
+8 9
+4 10
+1 2
+10 2
+6 10
+
 */

@@ -1,3 +1,9 @@
+/*
+Problem: 1194 - Monsters                                                                                                                                  
+Link - https://cses.fi/problemset/task/1194
+Author - Aryan Dua
+*/
+
 #include<iostream> 
 #include <bits/stdc++.h>
 using namespace std;
@@ -37,7 +43,7 @@ using namespace std;
 #define s second
 
 #define sort(v) sort(v.begin(), v.end())
-#define reverse(v) reverse(v.begin(), v.end())
+#define rev(v) reverse(v.begin(), v.end())
 #define mp make_pair
  
 const ll N = 2e5 + 4;
@@ -311,6 +317,7 @@ template <class T1, class T2>
 class Graph {
     int V; // No. of vertices
     int curr;
+    bool isCyclicUtil(int v, bool visited[], int parent, int length);
  
 public:
     Graph(int V); // Constructor
@@ -321,7 +328,8 @@ public:
     void connectedComponents();
     map<int, int > prevVertex;
     void dfs(int v, bool visited[]);
-    void bfs(int v);
+    bool isCyclic();
+    int bfs();
 };
 
 Graph::Graph(int V) {
@@ -364,24 +372,127 @@ void Graph::dfs(int v, bool visited[]) {
             dfs(*i, visited);
 }
 
-void Graph::bfs(int v) {
-    vector<bool> visited;
-    visited.resize(V, false);
-    list<int> queue;
-    visited[v] = true;
-    queue.push_back(v);
+int Graph::bfs() {
+    queue<ll > q;
+    vector<bool> visited (V, false);
  
-    while (!queue.empty()) {
-        v = queue.front();
-        // cout << v << " ";
-        queue.pop_front();
-        for (auto adjacent : adj[v]) 
-            if (!visited[adjacent]) {
-                visited[adjacent] = true;
-                prevVertex[adjacent] = v;
-                queue.push_back(adjacent);
+    for0int(i, V){
+        // Checking for new connected components
+        if(!visited[i]){
+            q.push(i);
+            visited[i] = true;
+            ll len = 0;
+            while(!q.empty()){
+                ll elem = q.front();
+                q.pop();
+                for(auto v : adj[elem]){
+                    if(!visited[v]){
+                        q.push(v);
+                        visited[v] = true;
+                        prevVertex[v] = elem;
+                    }
+                    // Check for a cycle
+                    else if(len>2){
+                        prevVertex[v] = elem;
+                        return v;
+                    }
+                }
+                len+=1;
             }
+        }
+    } 
+    return -1;
+}
+
+bool Graph::isCyclicUtil(int v, bool visited[], int parent, int length)
+{
+    visited[v] = true;
+    prevVertex[v] = parent+1;
+    list<int>::iterator i;
+    for (i = adj[v].begin(); i != adj[v].end(); ++i) {
+        if (!visited[*i]){
+            if (isCyclicUtil(*i, visited, v, length+1))
+                return true; 
+        }
+    // if the neighbour is visited and not a parent, its a cycle
+        else if (*i != parent && length>=2){
+            prevVertex[*i] = v+1;
+            return true;
+        }
+    }     
+    return false;
+}
+ 
+// Returns true if the graph contains
+// a cycle, else false.
+bool Graph::isCyclic()
+{
+    bool* visited = new bool[V];
+    for (int i = 0; i < V; i++)
+        visited[i] = false;
+
+    for (int u = 0; u < V; u++) {
+        if (!visited[u]){
+            prevVertex.clear();
+            if (isCyclicUtil(u, visited, -1, 0))
+                return true;
+        }
     }
+    return false;
+}
+
+vs grid;
+vvl visitable;
+vvl prevCoord (1000, vl (1000, -1));
+
+void bfs(pl coord, ll m, ll n, bool mons, queue<pair<pl, ll> > q2){
+    vvl vis (1000, vl (1000, 0));
+    vl di = {1, -1, 0, 0};
+    vl dj = {0, 0, 1, -1};
+    queue<pair<pl, ll> > q;
+    if(mons)
+        q = q2;
+    else
+        q.push(make_pair(coord, 0));
+    while (!q.empty()){
+        pl p = q.front().first;
+        ll length = q.front().second;
+        if(mons)
+            if(visitable[p.f][p.s]>=length)
+                visitable[p.f][p.s] = -1;
+        if(!mons)
+            if(p.f==m-1 || p.f==0 || p.s==n-1 || p.s==0)
+                visitable[q.front().f.f][q.front().f.s] = q.front().s;
+        q.pop(); 
+        for0(k, 4){
+            ll row = p.f+di[k];
+            ll col = p.s+dj[k];
+            bool cond1 = (row<m) && (col<n) && (row>=0) && (col>=0);
+            bool cond2 = grid[row][col]=='.';
+            if(cond1 && cond2 && !vis[row][col]){
+                q.push(make_pair(make_pair(row, col), length+1));
+                if(!mons)
+                    prevCoord[row][col] = k;
+                vis[row][col] = 1;
+            }
+        }   
+    }
+    return;
+}
+
+string trace_path(pl start, pl end){
+    string path;
+    string dirs = "DURL";
+    vi first = {-1, 1, 0, 0};
+    vl second = {0, 0, -1, 1};
+    while(end!=start){
+        ll dir = prevCoord[end.first][end.second];
+        end.first = end.first+first[dir];
+        end.second = end.second+second[dir];
+        path+=dirs[dir];
+    }
+    rev(path);
+    return path;
 }
 
 // -----X-----X-----X-----X-----X-----X-----X-----X-----X-----X-----X-----X-----X-----X-----X----
@@ -389,60 +500,38 @@ void Graph::bfs(int v) {
 
 void solve() {
 
-    ll n = input_n();  
     ll m = input_n();
+    ll n = input_n();
+    for0(i, m)
+        grid.push_back(input_string());
+    visitable.resize(m, vl (n, -1));
+    pl end;
+    pl start;
+    queue<pair<pl, ll> > q;
 
-    // Make a graph
-    Graph g(n); 
-    queue<ll > q;
-    vector<bool> visited (n, false);
-    vl ans (n, 0);
-    bool res = true;
-
-    for0(i, m){
-        ll u = input_n();  
-        ll v = input_n();
-        g.addEdge(u-1, v-1);
-    }
-    
-    for0int(i, n){
-        // Checking for new connected components
-        if(!visited[i]){
-            q.push(i);
-            visited[i] = true;
-            ans[i] = 1;
-            while(!q.empty()){
-                ll elem = q.front();
-                q.pop();
-                for(auto v : g.adj[elem]){
-                    if(!visited[v]){
-                        q.push(v);
-                        visited[v] = true;
-                        ans[v] = 3-ans[elem];
-                    }
-                    // Check for an odd length cycle
-                    else if(ans[v]!=3-ans[elem]){
-                        res = false;
-                        break;
-                    }
-                }
-            }
+    for0(i, m)
+        for0(j, n)
+        {
+            if(grid[i][j]=='A')
+                start = make_pair(i, j);
+            if(grid[i][j]=='M')
+                q.push(make_pair(make_pair(i, j), 0));
         }
-    }
-    // The map will store keys in a sorted order, just print out the colors assigned
-    if(res){
-        for(auto elem: ans)
-            cout<<elem<<" ";
-        cout<<endl;
-    }
-    else{
-        print("IMPOSSIBLE");
-    }
-    
-
-
-
-    
+    // Do a bfs traversal over A and find out which boundary block can be covered, and at what distance
+    bfs(start, m, n, false, q);    
+    bfs(start, m, n, true, q);
+    // Now wherever any monster can reach before A, remove it from the data structure
+    for0(i, m)
+        for0(j, n)
+            // If it is still visitable, it means that we can reach before the monster
+            if(visitable[i][j]>=0){
+                string path = trace_path(start, make_pair(i, j));
+                print("YES");
+                print(path.size());
+                print(path);  
+                return;
+            }
+    print("NO"); 
 }
 
 
@@ -468,3 +557,25 @@ int main(int argc, char *argv[]) {
     if(open)
         fclose(x);
 }
+
+// -----X-----X-----X-----X-----X-----X-----X-----X-----X-----X-----X-----X-----X-----X-----X----
+/*
+Input:
+15 15
+###############
+#M#...#...#...#
+#A#.#.#.#.#.#.#
+#.#.#.#.#.#.#.#
+#.#.#.#.#.#.#.#
+#.#.#.#.#.#.#.#
+#.#.#.#.#.#.#.#
+#.#.#.#.#.#.#.#
+#.#.#.#.#.#.#.#
+#.#.#.#.#.#.#.#
+#.#.#.#.#.#.#.#
+#.#.#.#.#.#.#.#
+#.#.#.#.#.#.#.#
+#...#...#...#.#
+#############.#
+
+*/
