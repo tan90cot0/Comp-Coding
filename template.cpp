@@ -76,6 +76,11 @@ template <class T>
 template<typename... T>
     void print(T&&... args) { 
         ((cout << args << " "), ...);
+    }
+
+template<typename... T>
+    void println(T&&... args) { 
+        ((cout << args << " "), ...);
         cout<<endl;
     }
 
