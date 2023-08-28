@@ -1,2 +1,2 @@
 # Comp-Coding
-This is a Repo to store all my solutions to competitive programming problems on different sites like CSES, Leetcode, etc. 
+This is a Repo to store my solutions to competitive programming problems of the CSES Problem Set.
