@@ -1,3 +1,9 @@
+/*
+Problem: 1653 - Elevator Rides                                                                                                                        
+Link - https://cses.fi/problemset/task/1653
+Author - Aryan Dua
+*/
+
 #include<iostream> 
 #include <bits/stdc++.h>
 using namespace std;
@@ -301,34 +307,34 @@ void update(vvl &dp, ll i, ll j){
 void solve()
 {
     ll n = input_n();
-    sl times;
-    vvl arr;
-    for0(i, n){
-        vl temp = input_arr(3);
-        ll temp0 = temp[0];
-        temp[0] = temp[1];
-        temp[1] = temp0;
-        arr.push_back(temp);
+    ll x = input_n();
+    vl weight = input_arr(n);
+    pair<int,int> best[1<<n];
+    best[0] = {1,0};
+    for (int s = 1; s < (1<<n); s++) {
+    // initial value: n+1 rides are needed
+        best[s] = {n+1,0};
+        for (int p = 0; p < n; p++) {
+            if (s&(1<<p)) {
+                // Check the value for the subset without the current person
+                auto option = best[s^(1<<p)];
+                //If the person can fit into the last elevator, fit him in
+                if (option.second+weight[p] <= x)
+                    // add p to an existing ride
+                    option.second += weight[p];
+                else {
+                    // otherwise, reserve a new ride for that person
+                    option.first++;
+                    option.second = weight[p];
+                }
+                // take the best option for the given subset
+                best[s] = min(best[s], option);
+            }
+        }
     }
-    sort(arr.begin(), arr.end());
+    print(best[(1<<n)-1].first);
+    
 
-    // sort according to end times
-    ll ans = 0;
-    map<ll, ll> dp;
-    dp[0] = 0;
-    // Map the start times to the max reward
-    for(auto project: arr){
-        ll start = project[1];
-        ll end = project[0];
-        ll reward = project[2];
-        // Lower bound gives the least number that is greater than or equal to
-        auto it = dp.lower_bound(start);
-        it--;
-        // Either consider current project, or don't
-        ans = max(ans, it->second + reward);
-        dp[end] = ans;
-    }
-    print(ans);
 }
 
 int main(int argc, char *argv[]) {
@@ -352,15 +358,7 @@ int main(int argc, char *argv[]) {
 }
 
 /*
-10
-76 77 96
-77 78 11
-11 12 46
-43 44 82
-25 25 87
-96 97 4
-39 40 22
-42 42 62
-42 42 30
-88 88 19
+Input:
+4 10
+4 8 6 1
 */

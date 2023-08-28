@@ -1,3 +1,9 @@
+/*
+Problem: 1093 - Two Sets II                                                                                                                       
+Link - https://cses.fi/problemset/task/1093
+Author - Aryan Dua
+*/
+
 #include<iostream> 
 #include <bits/stdc++.h>
 using namespace std;
@@ -300,27 +306,29 @@ void update(vvl &dp, ll i, ll j){
 
 void solve()
 {
-    ll a = input_n();
-    ll b = input_n();
-    ll m = max(a,b);
-    vvl grid (m, vl (m, 501));
-    for0(i, m){
-        for0(j, m){
-            if(i==j)
-                // On a diagonal, it already is a square
-                grid[i][j] = 0;
-            else{
-                // Break it down first row-wise, into 2 rectangles, then columnwise, then take their min
-                for0(k, (i+1)/2)
-                    grid[i][j] = min(grid[i][j], 1 + grid[k][j] + grid[i-1-k][j]);
-                for0(k, (j+1)/2)
-                    grid[i][j] = min(grid[i][j], 1 + grid[i][k] + grid[i][j-1-k]);
-                grid[j][i] = grid[i][j];
-                // the matrix will be symmetric
+    ll n = input_n();
+    if((n*(n+1))%4==0){
+        ll s= (n*(n+1))/4;
+        vvl dp (s+1, vl (n+1, 0));
+        // The sum 0 can be reached in 1 way always
+        for0(i, n+1)
+            dp[0][i] = 1;
+        for1(j, s){
+            for1(i, n){
+                // Ignoring the contribution of the ith element
+                dp[j][i]= (dp[j][i] + dp[j][i-1])%mod;
+                if(j-i>=0)
+                    // Taking the contribution of the ith element
+                    dp[j][i] = (dp[j][i] + dp[j-i][i-1])%mod;
             }
         }
+        // Not dp[n] because that will have repetitions, by taking n-1, we are considering that the 
+        // nth element will always be in the second set, therefore eliminating repetitions
+        print(dp[s][n-1]);
     }
-    print(grid[a-1][b-1]);
+    else
+        print(0);
+
 }
 
 int main(int argc, char *argv[]) {
@@ -345,5 +353,5 @@ int main(int argc, char *argv[]) {
 
 /*
 Input:
-159 399
+7
 */

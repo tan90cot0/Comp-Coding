@@ -7,6 +7,9 @@
 #Shell Scripts
 *.sh
 
+cp.py
+cp.cpp
+functions.cpp
 
 # Compiled Object files
 *.slo

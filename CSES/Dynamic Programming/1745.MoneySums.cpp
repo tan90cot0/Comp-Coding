@@ -1,3 +1,9 @@
+/*
+Problem: 1745 - Money Sums                                                                                                                           
+Link - https://cses.fi/problemset/task/1745
+Author - Aryan Dua
+*/
+
 #include<iostream> 
 #include <bits/stdc++.h>
 using namespace std;

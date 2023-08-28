@@ -1,3 +1,9 @@
+/*
+Problem: 1140 - Projects                                                                                                                           
+Link - https://cses.fi/problemset/task/1140
+Author - Aryan Dua
+*/
+
 #include<iostream> 
 #include <bits/stdc++.h>
 using namespace std;
@@ -10,11 +16,13 @@ using namespace std;
 #define fors(i, a, b, c) for(ll i = a; i < b; i += c)
 #define fora(x, v) for(auto x : v)
 #define vl vector<ll>
+#define vvl vector<vector<ll> >
 #define vs vector<string>
 #define vd vector<double>
 #define vb vector<bool>
 #define ml map<ll, ll>
 #define sl set<ll>
+#define pl pair<ll, ll>
 #define pub push_back
 #define pob pop_back
 #define yesno(x) cout << ((x) ? "YES\n" : "NO\n")
@@ -22,6 +30,14 @@ using namespace std;
  
 const ll N = 2e5 + 4;
 const ll mod = 1e9 + 7;
+
+ll mul(ll a, ll b){
+    return (a*b)%mod;
+}
+
+ll add(ll a, ll b){
+    return (a+b)%mod;
+}
 
 bool is_prime(ll n){
     for0(i, (int)(sqrt(n)-1))
@@ -178,9 +194,10 @@ ll binaryToDecimal(string s){
 
 map<ll, ll> frequency(vl arr){
     map<ll, ll> d;
-    for0(i, arr.size())
+    ll n = arr.size();
+    for0(i, n)
         d[arr[i]] = 0;
-    for0(i, arr.size())
+    for0(i, n)
         d[arr[i]]+=1;
     return d;
 }
@@ -200,27 +217,42 @@ void printd(double n)
 }
 
 void printarr(vl arr){
-    for0(i, arr.size())
+    for0(i, (ll)arr.size())
         cout<<arr[i]<<" ";
     cout<<endl;
 }
 
 void printarr(vs arr){
-    for0(i, arr.size())
+    for0(i, (ll)arr.size())
         cout<<arr[i]<<" ";
     cout<<endl;
 }
 
 void printarr(vd arr){
-    for0(i, arr.size())
+    for0(i, (ll)arr.size())
         cout<<arr[i]<<" ";
     cout<<endl;
 }
 
+void printarr(vector<pair<ll, ll>> arr){
+    for0(i, (ll)arr.size())
+        cout<<arr[i].first<<" "<<arr[i].second<<endl;
+    cout<<endl;
+}
+
 void printmat(vector<vd > arr){
-    for0(i, arr.size())
+    for0(i, (ll)arr.size())
     {
-        for0(j, arr[0].size())
+        for0(j, (ll)arr[0].size())
+            cout<<arr[i][j]<<" ";
+        cout<<endl;
+    }
+}
+
+void printmat(vvl arr){
+    for0(i, (ll)arr.size())
+    {
+        for0(j, (ll)arr[0].size())
             cout<<arr[i][j]<<" ";
         cout<<endl;
     }
@@ -265,36 +297,53 @@ ll getIndex(vd v, double K)
     return ind;
 }
 
-ll custom_index(vl &pages, vd & pagebyprice, double elem){
-    ll ind;
-    ll val = -1;
-    for0(i, pagebyprice.size())
-        if(pagebyprice[i]==elem && pages[i]>val){
-            ind = i;
-            val = pages[i];
-        }
-    return ind;
+void update(vvl &dp, ll i, ll j){
+    ll a = dp[i-1][j-1];
+    ll b = dp[i-1][j];
+    ll c = dp[i-1][j+1];
+    dp[i][j] = (a+b+c)%mod;
 }
 
 void solve()
 {
     ll n = input_n();
-    ll x = input_n();
-    vl prices = input_arr(n);
-    vl pages = input_arr(n);
-    vl dp(x+1,0);
-    // The order of loops is very important, and the manner as well (forward/reverse), 
-    // first loop through all the entries, and then the prices
-    for0(i, n)
-        rofl(j, x+1)
-            if(j>=prices[i])
-                dp[j] = max(dp[j], dp[j-prices[i]] + pages[i]);
-    print(dp[x]);
+    sl times;
+    vvl arr;
+    for0(i, n){
+        vl temp = input_arr(3);
+        ll temp0 = temp[0];
+        temp[0] = temp[1];
+        temp[1] = temp0;
+        arr.push_back(temp);
+    }
+    sort(arr.begin(), arr.end());
+
+    // sort according to end times
+    ll ans = 0;
+    map<ll, ll> dp;
+    dp[0] = 0;
+    // Map the start times to the max reward
+    for(auto project: arr){
+        ll start = project[1];
+        ll end = project[0];
+        ll reward = project[2];
+        // Lower bound gives the least number that is greater than or equal to
+        auto it = dp.lower_bound(start);
+        it--;
+        // Either consider current project, or don't
+        ans = max(ans, it->second + reward);
+        dp[end] = ans;
+    }
+    print(ans);
 }
 
 int main(int argc, char *argv[]) {
-	if(argc>1)
-        freopen("test_case.txt", "r", stdin);
+	FILE* x;
+    bool open = false;
+	if(argc>1){
+        x = freopen("test_case.txt", "r", stdin);
+        open = true;
+    }
     bool t = false;
     if(t){
         int tc;
@@ -304,10 +353,20 @@ int main(int argc, char *argv[]) {
     }
     else
         solve();
+    if(open)
+        fclose(x);
 }
 
 /*
-10 10
-1 2 10 6 5 1 7 4 10 4
-6 3 8 1 7 3 8 6 5 6
+10
+76 77 96
+77 78 11
+11 12 46
+43 44 82
+25 25 87
+96 97 4
+39 40 22
+42 42 62
+42 42 30
+88 88 19
 */

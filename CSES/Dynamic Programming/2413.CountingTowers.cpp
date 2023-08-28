@@ -1,3 +1,9 @@
+/*
+Problem: 2413 - Counting Towers                                                                                                                                 
+Link - https://cses.fi/problemset/task/2413
+Author - Aryan Dua
+*/
+
 #include<iostream> 
 #include <bits/stdc++.h>
 using namespace std;
@@ -25,14 +31,6 @@ using namespace std;
 const ll N = 2e5 + 4;
 const ll mod = 1e9 + 7;
 
-ll mul(ll a, ll b){
-    return (a*b)%mod;
-}
-
-ll add(ll a, ll b){
-    return (a+b)%mod;
-}
-
 bool is_prime(ll n){
     for0(i, (int)(sqrt(n)-1))
         if(n%(i+2)==0)
@@ -55,6 +53,14 @@ vl get_factorials(ll n){
     for0(i, n-2)
         factorials.pub((factorials[i+1]*(i+2))%mod);
     return factorials;
+}
+
+ll mul(ll a, ll b){
+    return (a*b)%mod;
+}
+
+ll add(ll a, ll b){
+    return (a+b)%mod;
 }
 
 ll binary_search(vd arr, ll low, ll high, ll x){
@@ -265,13 +271,6 @@ void sub(vl &arr, ll k){
     }
 }
 
-ll max(ll a, ll b){
-    if(a>b)
-        return a;
-    else
-        return b;
-}
-
 ll max(vl a){
     return *max_element(a.begin(), a.end());
 }
@@ -305,64 +304,59 @@ void update(vvl &dp, ll i, ll j){
     dp[i][j] = (a+b+c)%mod;
 }
 
-double area(ll base, ll height){
-    return (base*height*1.0)/2;
-}
-
-double sq(double a){
-    return a*a*1.0;
-}
-
-void solve()
+vl solver()
 {
-    string s1 = input_string();
-    string s2 = input_string();
-    ll n1 = s1.length();
-    ll n2 = s2.length();
-    vvl grid (n1+1, vl (n2+1, 0));
-    for1(i, n1)
-        grid[i][0] = i;
-    for1(j, n2)
-        grid[0][j] = j;
-    for0(i, n1)
-        for0(j, n2){
-            // If the letters is the same, then the same letter wont cause any 'edits'
-            if(s1[i]==s2[j])
-                grid[i+1][j+1] = grid[i][j];
-            else
-                grid[i+1][j+1] = min(min(grid[i][j+1], grid[i+1][j]), grid[i][j])  + 1;
-            // These are the 3 different ways of editing a word, add1/add2/edit letter
-        }
-    print(grid[n1][n2]);
+    ll n = 1e6;
+    // a array represents towers with 2 separate blocks on top
+    vl a(1, 1);
 
+    // b array represents towers with 1 joined block on top
+    vl b(1, 1);
+
+    // dp array represents the answer for each n
+    vl dp(1, 2);
     
+    for0(i, n-1){
+        a.push_back(add(b[i], mul(4, a[i])));
+        b.push_back(add(a[i], mul(2, b[i])));
+        dp.push_back(add(a[i+1], b[i+1]));
+    }
+    return dp;
+}
 
+void solve(vl dp){
+    ll n = input_n();
+    print(dp[n-1]);
 }
 
 int main(int argc, char *argv[]) {
-	FILE* x;
+    FILE* x;
     bool open = false;
 	if(argc>1){
         x = freopen("test_case.txt", "r", stdin);
         open = true;
     }
-    bool t = false;
+        
+    // Store all the values up till 10^6 once. 
+    vl dp = solver();
+    bool t = true;
     if(t){
         int tc;
         cin>>tc;
         while(tc--)
-            solve();
+            solve(dp);
     }
     else
-        solve();
+        solve(dp);
     if(open)
         fclose(x);
 }
 
-/*
-Input: 
+/* Input
 
-SQTCKWAMFJEBV
-IUWGGNJOMQFP
+3
+2
+6
+1337
 
 */

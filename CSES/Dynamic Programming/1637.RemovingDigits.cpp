@@ -1,22 +1,25 @@
+/*
+Problem: 1637 - Removing Digits                                                                                                                                  
+Link - https://cses.fi/problemset/task/1637
+Author - Aryan Dua
+*/
+
 #include<iostream> 
 #include <bits/stdc++.h>
 using namespace std;
-
+ 
 #define ll long long
 #define ld long double
-#define for0(i, a) for(ll i = 0; i < a; i++)
-#define for1(i, a) for(ll i = 1; i <= a; i++)
-#define rofl(i, a) for(ll i = a; i > -1; i--)
+#define forl(i, a, b) for(ll i = a; i < b; i++)
+#define rofl(i, a, b) for(ll i = a; i > b; i--)
 #define fors(i, a, b, c) for(ll i = a; i < b; i += c)
 #define fora(x, v) for(auto x : v)
 #define vl vector<ll>
-#define vvl vector<vector<ll> >
 #define vs vector<string>
 #define vd vector<double>
 #define vb vector<bool>
 #define ml map<ll, ll>
 #define sl set<ll>
-#define pl pair<ll, ll>
 #define pub push_back
 #define pob pop_back
 #define yesno(x) cout << ((x) ? "YES\n" : "NO\n")
@@ -24,39 +27,31 @@ using namespace std;
  
 const ll N = 2e5 + 4;
 const ll mod = 1e9 + 7;
-
+ 
 bool is_prime(ll n){
-    for0(i, (int)(sqrt(n)-1))
-        if(n%(i+2)==0)
+    forl(i, 2, (int)(sqrt(n)+1))
+        if(n%i==0)
             return false;
     return true;
 }
-
+ 
 vl get_primes(ll n){
     vl primes;
-    for0(i, n-2)
-        if(is_prime(i+2))
-            primes.pub(i+2);
+    forl(i, 2, n)
+        if(is_prime(i))
+            primes.pub(i);
     return primes;
 }
-
+ 
 vl get_factorials(ll n){
     vl factorials;
     factorials.pub(1);
     factorials.pub(1);
-    for0(i, n-2)
-        factorials.pub((factorials[i+1]*(i+2))%mod);
+    forl(i, 2, n)
+        factorials.pub((factorials[i-1]*i)%mod);
     return factorials;
 }
-
-ll mul(ll a, ll b){
-    return (a*b)%mod;
-}
-
-ll add(ll a, ll b){
-    return (a+b)%mod;
-}
-
+ 
 ll binary_search(vd arr, ll low, ll high, ll x){
     ll mid = (high+low)/2;
     if(high>=low){
@@ -72,7 +67,7 @@ ll binary_search(vd arr, ll low, ll high, ll x){
         return -1;
     
 }
-
+ 
 ll binary_search(vl arr, ll low, ll high, ll x){
     ll mid = (high+low)/2;
     if(high>=low){
@@ -88,27 +83,31 @@ ll binary_search(vl arr, ll low, ll high, ll x){
         return -1;
     
 }
-
+ 
 string input_string(){
     string s;
     cin>>s;
     return s;
 }
-
+ 
 ll input_n(){
     ll n;
     cin>>n;
     return n;
 }
-
+ 
 vl input_arr(ll n){
-    vl arr(n,0);
-    for0(i, n)
-        cin>>arr[i];
+    vl arr;
+    ll temp;
+    forl(i, 0, n)
+    {
+        cin>>temp;
+        arr.pub(temp);
+    }
     return arr;
         
 }
-
+ 
 ll modinverse(ll a) {
 	ll m = mod, y = 0, x = 1;
 	while (a > 1) {
@@ -123,21 +122,21 @@ ll modinverse(ll a) {
 	if (x < 0) x += mod;
 	return x;
 }
-
+ 
 ll gcd(ll a, ll b) {
 	if (b == 0)
 		return a;
 	return gcd(b, a % b);
 }
-
+ 
 ll lcm(ll a, ll b) {
 	return (a / gcd(a, b)) * b;
 }
-
+ 
 bool checkpoweroftwo(ll n) {
 	return !(n & (n - 1));
 }
-
+ 
 ll power(ll a, ll b, ll md = mod) {
 	ll product = 1;
 	a %= md;
@@ -148,11 +147,11 @@ ll power(ll a, ll b, ll md = mod) {
 	}
 	return product % md;
 }
-
+ 
 ll inv(ll x){
     return power(x, mod-2);
 }
-
+ 
 ll ncr_modp(ll n, ll r, ll p){
     if(n<=0 || r<=0 || (n-r)<=0)
         return 1;
@@ -161,10 +160,10 @@ ll ncr_modp(ll n, ll r, ll p){
     ll inv1 = inv(factorials[r]);
     ll inv2 = inv(factorials[n-r]);
     ll inv = (inv1*inv2)%p;
-
+ 
     return (factorials[n]*inv)%p;
 }
-
+ 
 string decimalToBinary(ll n)
 {
     string s = bitset<64>(n).to_string();
@@ -173,7 +172,7 @@ string decimalToBinary(ll n)
         return s.substr(loc1);
     return "0";
 }
-
+ 
 ll binaryToDecimal(string s){
     int i,N,decimal_number=0,p=0;
     N=s.size();
@@ -185,75 +184,59 @@ ll binaryToDecimal(string s){
     }
     return decimal_number;
 }
-
+ 
 map<ll, ll> frequency(vl arr){
     map<ll, ll> d;
-    ll n = arr.size();
-    for0(i, n)
+    forl(i, 0, arr.size())
         d[arr[i]] = 0;
-    for0(i, n)
+    forl(i, 0, arr.size())
         d[arr[i]]+=1;
     return d;
 }
-
+ 
 void print(ll a){
     cout<<a<<endl;
 }
-
+ 
 void print(string s)
 {
     cout<<s<<endl;
 }
-
+ 
 void printd(double n)
 {
     cout<<n<<endl;
 }
-
+ 
 void printarr(vl arr){
-    for0(i, (ll)arr.size())
+    forl(i, 0, arr.size())
         cout<<arr[i]<<" ";
     cout<<endl;
 }
-
+ 
 void printarr(vs arr){
-    for0(i, (ll)arr.size())
+    forl(i, 0, arr.size())
         cout<<arr[i]<<" ";
     cout<<endl;
 }
-
+ 
 void printarr(vd arr){
-    for0(i, (ll)arr.size())
+    forl(i, 0, arr.size())
         cout<<arr[i]<<" ";
     cout<<endl;
 }
-
-void printarr(vector<pair<ll, ll>> arr){
-    for0(i, (ll)arr.size())
-        cout<<arr[i].first<<" "<<arr[i].second<<endl;
-    cout<<endl;
-}
-
+ 
 void printmat(vector<vd > arr){
-    for0(i, (ll)arr.size())
+    forl(i, 0, arr.size())
     {
-        for0(j, (ll)arr[0].size())
+        forl(j, 0, arr[0].size())
             cout<<arr[i][j]<<" ";
         cout<<endl;
     }
 }
-
-void printmat(vvl arr){
-    for0(i, (ll)arr.size())
-    {
-        for0(j, (ll)arr[0].size())
-            cout<<arr[i][j]<<" ";
-        cout<<endl;
-    }
-}
-
+ 
 void sub(vl &arr, ll k){
-    rofl(i, arr.size()-1){
+    rofl(i, arr.size()-1, -1){
         if(arr[i]-k>=0){
             arr[i]-=k;
             break;
@@ -264,93 +247,40 @@ void sub(vl &arr, ll k){
         }
     }
 }
-
-ll max(vl a){
-    return *max_element(a.begin(), a.end());
-}
-
-double max(vd a){
-    return *max_element(a.begin(), a.end());
-}
-
-ll getIndex(vl v, ll K)
+ 
+ 
+void solve()
 {
-    auto it = find(v.begin(), v.end(), K);
-    ll ind = -1;
-    if (it != v.end()) 
-        ind = it - v.begin();
-    return ind;
-}
-
-ll getIndex(vd v, double K)
-{
-    auto it = find(v.begin(), v.end(), K);
-    ll ind = -1;
-    if (it != v.end()) 
-        ind = it - v.begin();
-    return ind;
-}
-
-void update(vvl &dp, ll i, ll j){
-    ll a = dp[i-1][j-1];
-    ll b = dp[i-1][j];
-    ll c = dp[i-1][j+1];
-    dp[i][j] = (a+b+c)%mod;
-}
-
-vl solver()
-{
-    ll n = 1e6;
-    // a array represents towers with 2 separate blocks on top
-    vl a(1, 1);
-
-    // b array represents towers with 1 joined block on top
-    vl b(1, 1);
-
-    // dp array represents the answer for each n
-    vl dp(1, 2);
-    
-    for0(i, n-1){
-        a.push_back(add(b[i], mul(4, a[i])));
-        b.push_back(add(a[i], mul(2, b[i])));
-        dp.push_back(add(a[i+1], b[i+1]));
-    }
-    return dp;
-}
-
-void solve(vl dp){
     ll n = input_n();
-    print(dp[n-1]);
-}
-
-int main(int argc, char *argv[]) {
-    FILE* x;
-    bool open = false;
-	if(argc>1){
-        x = freopen("test_case.txt", "r", stdin);
-        open = true;
+    vl arr;
+    while(n>0){
+        arr.pub(n%10);
+        n/=10;
     }
-        
-    // Store all the values up till 10^6 once. 
-    vl dp = solver();
-    bool t = true;
+    reverse(arr.begin(), arr.end());
+    ll cnt = 0;
+    ll k = *max_element(arr.begin(), arr.end());
+    while(k>0){
+        sub(arr, k);
+        k = *max_element(arr.begin(), arr.end());
+        cnt+=1;
+    }
+    print(cnt);
+ 
+    
+}
+ 
+int main(int argc, char *argv[]) {
+	if(argc>1)
+        freopen("test_case.txt", "r", stdin);
+    bool t = false;
     if(t){
         int tc;
         cin>>tc;
         while(tc--)
-            solve(dp);
+            solve();
     }
     else
-        solve(dp);
-    if(open)
-        fclose(x);
+        solve();
+ 
 }
-
-/* Input
-
-3
-2
-6
-1337
-
-*/

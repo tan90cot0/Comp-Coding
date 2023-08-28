@@ -1,3 +1,9 @@
+/*
+Problem: 1744 - Rectangle Cutting                                                                                                                             
+Link - https://cses.fi/problemset/task/1744
+Author - Aryan Dua
+*/
+
 #include<iostream> 
 #include <bits/stdc++.h>
 using namespace std;
@@ -300,35 +306,27 @@ void update(vvl &dp, ll i, ll j){
 
 void solve()
 {
-    ll n = input_n();
-    ll x = input_n();
-    vl weight = input_arr(n);
-    pair<int,int> best[1<<n];
-    best[0] = {1,0};
-    for (int s = 1; s < (1<<n); s++) {
-    // initial value: n+1 rides are needed
-        best[s] = {n+1,0};
-        for (int p = 0; p < n; p++) {
-            if (s&(1<<p)) {
-                // Check the value for the subset without the current person
-                auto option = best[s^(1<<p)];
-                //If the person can fit into the last elevator, fit him in
-                if (option.second+weight[p] <= x)
-                    // add p to an existing ride
-                    option.second += weight[p];
-                else {
-                    // otherwise, reserve a new ride for that person
-                    option.first++;
-                    option.second = weight[p];
-                }
-                // take the best option for the given subset
-                best[s] = min(best[s], option);
+    ll a = input_n();
+    ll b = input_n();
+    ll m = max(a,b);
+    vvl grid (m, vl (m, 501));
+    for0(i, m){
+        for0(j, m){
+            if(i==j)
+                // On a diagonal, it already is a square
+                grid[i][j] = 0;
+            else{
+                // Break it down first row-wise, into 2 rectangles, then columnwise, then take their min
+                for0(k, (i+1)/2)
+                    grid[i][j] = min(grid[i][j], 1 + grid[k][j] + grid[i-1-k][j]);
+                for0(k, (j+1)/2)
+                    grid[i][j] = min(grid[i][j], 1 + grid[i][k] + grid[i][j-1-k]);
+                grid[j][i] = grid[i][j];
+                // the matrix will be symmetric
             }
         }
     }
-    print(best[(1<<n)-1].first);
-    
-
+    print(grid[a-1][b-1]);
 }
 
 int main(int argc, char *argv[]) {
@@ -353,6 +351,5 @@ int main(int argc, char *argv[]) {
 
 /*
 Input:
-4 10
-4 8 6 1
+159 399
 */
